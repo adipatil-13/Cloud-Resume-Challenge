@@ -1,0 +1,11 @@
+region_name = "us-east-1"
+bucket_name = "adityapatil.click"
+lambda_name = "lambda_increment"
+lambda_initialize_dynamodb_name = "lambda_initialize_dynamodb"
+dynamodb_name = "Visitor_Table_crc"
+lambda_runtime = "python3.10"
+state_name = "terraformstatenameadi1"
+alternate_domain_names = ["adityapatil.click", "*.adityapatil.click","www.adityapatil.click"]
+lambda_reset_name = "lambda_reset_counter"
+domain_name = "adityapatil.click"
+sub_domain_name = "*.adityapatil.click"
