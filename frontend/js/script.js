@@ -23,7 +23,7 @@ window.addEventListener('DOMContentLoaded', event => {
     });
 
     // Initialize DynamoDB table by calling Lambda Function URL with the table name
-    fetch('NITIALIZE_FUNCTION_URL', {
+    fetch('INITIALIZE_FUNCTION_URL', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
