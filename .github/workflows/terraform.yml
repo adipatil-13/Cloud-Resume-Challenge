@@ -14,14 +14,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Node.js environment
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-
-    - name: Install dependencies
-      run: npm install
-
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
       with:
@@ -37,10 +29,6 @@ jobs:
     - name: Terraform Init
       working-directory: ./terraform
       run: terraform init -upgrade
-    
-    #- name: Terraform Refresh
-    #  working-directory: ./terraform
-    #  run: terraform refresh
 
     - name: Terraform Apply
       working-directory: ./terraform
@@ -48,7 +36,6 @@ jobs:
         TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       run: terraform apply -auto-approve
 
-    
     - name: Output Terraform JSON
       working-directory: ./terraform
       run: |
@@ -126,16 +113,14 @@ jobs:
         WEBSITE_URL: ${{ env.WEBSITE_URL }}
         RESET_FUNCTION_URL: ${{ env.RESET_FUNCTION_URL }}
 
-    - name: Update scripts.js with dynamic parameters
+    - name: Update script.js with dynamic parameters
       if: ${{ env.LAMBDA_FUNCTION_URL != '' && env.INITIALIZE_FUNCTION_URL != '' && env.DYNAMODB_TABLE_NAME != '' && env.BUCKET_NAME != '' }}
       working-directory: ./frontend/js
       run: |
-        
-        
-        # Update the scripts.js file
-        sed -i "s|LAMBDA_FUNCTION_URL|${{ env.LAMBDA_FUNCTION_URL }}|g" scripts.js
-        sed -i "s|INITIALIZE_FUNCTION_URL|${{ env.INITIALIZE_FUNCTION_URL }}|g" scripts.js
-        sed -i "s|DYNAMODB_TABLE_NAME|${{ env.DYNAMODB_TABLE_NAME }}|g" scripts.js
+        # Update the script.js file
+        sed -i "s|LAMBDA_FUNCTION_URL|${{ env.LAMBDA_FUNCTION_URL }}|g" script.js
+        sed -i "s|INITIALIZE_FUNCTION_URL|${{ env.INITIALIZE_FUNCTION_URL }}|g" script.js
+        sed -i "s|DYNAMODB_TABLE_NAME|${{ env.DYNAMODB_TABLE_NAME }}|g" script.js
       env:
         LAMBDA_FUNCTION_URL: ${{ env.LAMBDA_FUNCTION_URL }}
         INITIALIZE_FUNCTION_URL: ${{ env.INITIALIZE_FUNCTION_URL }}
@@ -159,10 +144,10 @@ jobs:
           WEBSITE_URL: ${{ env.WEBSITE_URL }}
           RESET_FUNCTION_URL: ${{ env.RESET_FUNCTION_URL }}
 
-    - name: Upload updated scripts.js to S3
+    - name: Upload updated script.js to S3
       if: ${{ env.LAMBDA_FUNCTION_URL && env.INITIALIZE_FUNCTION_URL && env.DYNAMODB_TABLE_NAME && env.BUCKET_NAME }}
       run: |
-          aws s3 cp frontend/js/scripts.js s3://${{ env.BUCKET_NAME }}/js/scripts.js
+          aws s3 cp frontend/js/script.js s3://${{ env.BUCKET_NAME }}/js/script.js
       env:
           LAMBDA_FUNCTION_URL: ${{ env.LAMBDA_FUNCTION_URL }}
           INITIALIZE_FUNCTION_URL: ${{ env.INITIALIZE_FUNCTION_URL }}
@@ -170,31 +155,3 @@ jobs:
           BUCKET_NAME: ${{ env.BUCKET_NAME }}
           WEBSITE_URL: ${{ env.WEBSITE_URL }}
           RESET_FUNCTION_URL: ${{ env.RESET_FUNCTION_URL }}
-    
-    - name: Update cypress scripts with dynamic parameters
-      if: ${{ env.LAMBDA_FUNCTION_URL != '' && env.INITIALIZE_FUNCTION_URL != '' && env.DYNAMODB_TABLE_NAME != '' && env.BUCKET_NAME != '' }}
-      working-directory: ./cypress/e2e
-      run: |
-            
-            # Update the cypress files
-            sed -i "s|LAMBDA_FUNCTION_URL|${{ env.LAMBDA_FUNCTION_URL }}|g" increment.cy.js
-            sed -i "s|RESET_FUNCTION_URL|${{ env.RESET_FUNCTION_URL }}|g" increment.cy.js
-            sed -i "s|DYNAMODB_TABLE_NAME|${{ env.DYNAMODB_TABLE_NAME }}|g" increment.cy.js
-            sed -i "s|INITIALIZE_FUNCTION_URL|${{ env.INITIALIZE_FUNCTION_URL }}|g" initialize.cy.js
-            sed -i "s|DYNAMODB_TABLE_NAME|${{ env.DYNAMODB_TABLE_NAME }}|g" initialize.cy.js
-            sed -i "s|RESET_FUNCTION_URL|${{ env.RESET_FUNCTION_URL}}|g" DOM.cy.js
-            sed -i "s|DYNAMODB_TABLE_NAME|${{ env.DYNAMODB_TABLE_NAME }}|g" DOM.cy.js
-            sed -i "s|WEBSITE_URL|${{ env.WEBSITE_URL}}|g" DOM.cy.js
-            
-
-      env:
-            LAMBDA_FUNCTION_URL: ${{ env.LAMBDA_FUNCTION_URL }}
-            INITIALIZE_FUNCTION_URL: ${{ env.INITIALIZE_FUNCTION_URL }}
-            DYNAMODB_TABLE_NAME: ${{ env.DYNAMODB_TABLE_NAME }}
-            BUCKET_NAME: ${{ env.BUCKET_NAME }}
-            WEBSITE_URL: ${{ env.WEBSITE_URL }}
-            RESET_FUNCTION_URL: ${{ env.RESET_FUNCTION_URL }}
-
-
-    - name: Run Cypress tests
-      run: npm run cypress:run  
